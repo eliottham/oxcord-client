@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import io from 'socket.io-client';
 import Peer from 'peerjs';
 
-import './Chat.css';
+import './Room.css';
 
 import InfoBar from '../InfoBar/InfoBar';
 import Input from '../Input/Input';
