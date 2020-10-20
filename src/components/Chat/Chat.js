@@ -10,6 +10,7 @@ import Input from '../Input/Input';
 import Messages from '../Messages/Messages';
 import TextContainer from '../TextContainer/TextContainer';
 import Stream from '../Stream/Stream';
+import AudioPlayer from '../AudioPlayer/AudioPlayer';
 
 let socket;
 
@@ -20,7 +21,9 @@ const Chat = ({ location }) => {
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
   const [peer, setPeer] = useState(undefined);
-  const ENDPOINT = 'localhost:5000';
+  const [audioSource, setAudioSource] = useState(undefined);
+
+  const ENDPOINT = 'https://oxcord-525.herokuapp.com/';
 
   useEffect(() => {
     // runs when component renders
@@ -40,15 +43,7 @@ const Chat = ({ location }) => {
     peer.on('call', (call) => {
       call.answer();
       call.on('stream', (stream) => {
-        // stream.getVideoTracks()[0].enabled = true;
-        const video = document.createElement('video');
-        video.width = 300;
-        video.height = 300;
-        video.srcObject = stream;
-        video.addEventListener('loadedmetadata', () => {
-          video.play();
-        });
-        document.querySelector('.textContainer').append(video);
+        setAudioSource(stream);
       });
     });
 
@@ -61,7 +56,7 @@ const Chat = ({ location }) => {
     });
 
     setPeer(peer);
-  }, [ENDPOINT, location.search]); // useEffect gets ran only if ENDPOINT or location.search get changed
+  }, [ENDPOINT, location.search, audioSource]); // useEffect gets ran only if ENDPOINT or location.search get changed
 
   useEffect(() => {
     socket.on('message', (message) => {
@@ -85,7 +80,6 @@ const Chat = ({ location }) => {
 
   return (
     <div className='outerContainer'>
-      <Stream />
       <div className='container'>
         <InfoBar room={room} />
         <Messages name={name} messages={messages} />
@@ -97,6 +91,7 @@ const Chat = ({ location }) => {
       </div>
       <TextContainer users={users} />
       <Stream peer={peer} peerIds={users.map((user) => user.peerId)} />
+      <AudioPlayer audioSource={audioSource} />
     </div>
   );
 };

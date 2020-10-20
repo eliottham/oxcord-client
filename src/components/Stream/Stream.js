@@ -6,7 +6,15 @@ const Stream = ({ peer, peerIds }) => {
     try {
       captureStream = await navigator.mediaDevices.getDisplayMedia({
         video: true,
-        audio: true,
+        audio: {
+          autoGainControl: false,
+          echoCancellation: false,
+          googAutoGainControl: false,
+          noiseSuppression: false,
+          sampleRate: 48000,
+          sampleSize: 16,
+          channelCount: 2,
+        },
       });
       const videoTrack = captureStream.getVideoTracks()[0];
       videoTrack.stop();
@@ -16,7 +24,15 @@ const Stream = ({ peer, peerIds }) => {
     }
     for (const peerId of peerIds) {
       if (peerId !== peerId.id) {
-        peer.call(peerId, captureStream);
+        peer.call(peerId, captureStream, {
+          sdpTransform: (sdp) => {
+            sdp = sdp.replace(
+              'useinbandfec=1',
+              'useinbandfec=1; stereo=1; maxaveragebitrate=51000'
+            );
+            return sdp;
+          },
+        });
       }
     }
   }
