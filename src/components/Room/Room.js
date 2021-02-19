@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react'; // useEffect allows for life
 import queryString from 'query-string';
 import io from 'socket.io-client';
 import Peer from 'peerjs';
+import Grid from '@material-ui/core/Grid';
 
 import './Room.css';
 
 import InfoBar from '../InfoBar/InfoBar';
 import Input from '../Input/Input';
 import Messages from '../Messages/Messages';
-import TextContainer from '../TextContainer/TextContainer';
+import MemberList from '../MemberList/MemberList';
 import Stream from '../Stream/Stream';
 import AudioPlayer from '../AudioPlayer/AudioPlayer';
 
 let socket;
 
-const Chat = ({ location }) => {
+const Room = ({ location }) => {
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
   const [message, setMessage] = useState('');
@@ -79,8 +80,11 @@ const Chat = ({ location }) => {
   };
 
   return (
-    <div className='outerContainer'>
-      <div className='container'>
+    <Grid container style={{ height: '100%' }}>
+      <Grid item xs={2} style={{ height: '92%' }}>
+        <MemberList users={users} />
+      </Grid>
+      <Grid item xs={10} style={{ height: '92%' }}>
         <InfoBar room={room} />
         <Messages name={name} messages={messages} />
         <Input
@@ -88,11 +92,14 @@ const Chat = ({ location }) => {
           setMessage={setMessage}
           sendMessage={sendMessage}
         />
-      </div>
-      <TextContainer users={users} />
-      <Stream peer={peer} peerIds={users.map((user) => user.peerId)} />
-      <AudioPlayer audioSource={audioSource} />
-    </div>
+      </Grid>
+      <Grid item xs={2} style={{ height: '8%', backgroundColor: 'red' }}>
+        <Stream peer={peer} peerIds={users.map((user) => user.peerId)} />
+      </Grid>
+      <Grid item xs={10} style={{ height: '8%', backgroundColor: 'blue' }}>
+        <AudioPlayer audioSource={audioSource} />
+      </Grid>
+    </Grid>
   );
 };
-export default Chat;
+export default Room;

@@ -16,14 +16,15 @@ const Stream = ({ peer, peerIds }) => {
           channelCount: 2,
         },
       });
-      const videoTrack = captureStream.getVideoTracks()[0];
+      const videoTrack =
+        captureStream.getVideoTracks() && captureStream.getVideoTracks()[0];
       videoTrack.stop();
       captureStream.removeTrack(videoTrack);
     } catch (err) {
       console.error('Capturing media failed: ' + err);
     }
     for (const peerId of peerIds) {
-      if (peerId !== peerId.id) {
+      if (peerId !== peer.id) {
         peer.call(peerId, captureStream, {
           sdpTransform: (sdp) => {
             sdp = sdp.replace(
